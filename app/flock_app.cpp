@@ -1,6 +1,4 @@
-#include "flock/flock.hpp"
+#include "cli/cli.h"
 #include <iostream>
 
-int main() {
-    std::cout << "hola mundo de: "<< flock::add_two(0)<< std::endl;    
-}
+int main(int argc, char *argv[]) { return cli::run_cli(argc, argv); }
