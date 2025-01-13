@@ -1,39 +1,58 @@
-#include <docopt/docopt.h>
+#include "cli/commands.h"
+#include <cli11/CLI11.hpp>
 #include <iostream>
 
-// Definición del mensaje de uso para docopt
 static const char USAGE[] =
-    R"(Focuslock CLI Application.
-    Usage:
-      focuslock --name=<name> [--greet]
+    R"(focuslock.
+    usage:
+      focuslock new-session [--name=<session_name>]
+      focuslock set-session [--name=<session_name>]
+      focuslock status
       focuslock (-h | --help)
       focuslock --version
 
-    Options:
-      -h --help          Show this screen.
-      --version          Show version.
-      --name=<name>      Specify a name.
-      --greet            Print a greeting message.
+    options:
+      -h --help          show this screen.
+      --version          show version.
+
+      new-session        create a new session with default or customized settings
+      --name=<session_name>     specify the session name (for new-session).
+
+      set-session        set an existing session as the active session
+      --name=<session_name>     name of an existing session.
+
     )";
 
 namespace cli {
 
-int run_cli(int argc, char *argv[]) {
-  // Analizar los argumentos con docopt
-  std::map<std::string, docopt::value> args =
-      docopt::docopt(USAGE, {argv + 1, argv + argc}, true, "Focuslock 0.0.1");
-
-  // Mostrar los argumentos analizados
-  std::cout << "Parsed arguments:" << std::endl;
-  for (const auto &arg : args) {
-    std::cout << arg.first << ": " << arg.second << std::endl;
+void newSession(const std::map<std::string, std::string> &args) {
+  if (args.find("--name") != args.end() && !args.at("--name").empty()) {
+    std::cout << "creating new session: " << args.at("--name") << std::endl;
+  } else {
+    std::cout << "name session not specified..." << std::endl;
   }
+}
 
-  // Lógica de ejemplo
-  if (args["--greet"].asBool() && args["--name"]) {
-    std::cout << "Hello, " << args["--name"].asString() << "!" << std::endl;
+void createCommands(CommandRegistry &registry, CLI::App &app) {
+  registry.addCommand(Command(
+      app, "new-session",
+      "create a new session for focuslock. You can customize the session "
+      "later using other commands.",
+      newSession, {{"--name", "name of the session to create"}}));
+}
+
+// run_cli read arguments of program execution and handle them
+int runCli(int argc, char *argv[]) {
+  CLI::App app{"Focuslock CLI Application"};
+  CommandRegistry registry;
+  createCommands(registry, app);
+  CLI11_PARSE(app, argc, argv);
+  const Command *cmd = registry.findCommand();
+  if (cmd) {
+    cmd->exec(cmd->getArgs());
+  } else {
+    std::cout << "command not found" << std::endl;
   }
-
   return 0;
 }
 
