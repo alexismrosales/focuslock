@@ -9,7 +9,8 @@ public:
   // constructor with args
   Command(CLI::App &app, std::string name, std::string description,
           void (*func)(const std::map<std::string, std::string> &args),
-          const std::map<std::string, std::string> &options = {});
+          const std::map<std::string, std::string> &options = {},
+          const bool &dynamicArgs = false);
 
   // with const at the end to avoid variable modification
   const std::string &getName() const;
@@ -19,14 +20,16 @@ public:
   void exec(const std::map<std::string, std::string> &) const;
 
 private:
+  bool dynamicArgs_;
   CLI::App &app_;
   std::string name_;        // command name
   std::string description_; // desc of the command
+  CLI::App *cmd_;
   std::map<std::string, std::string> options_;
+  std::map<std::string, std::shared_ptr<std::vector<std::string>>>
+      optionValues_;
   void (*func_)(const std::map<std::string, std::string>
                     &args); // pointer to the function
-  std::map<std::string, std::string> optionValues_;
-  CLI::App *cmd_;
 };
 
 class CommandRegistry {
