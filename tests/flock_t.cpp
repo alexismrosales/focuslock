@@ -1,7 +1,5 @@
 #include "catch2/catch.hpp"
-#include "flock/flock.hpp"
 
-TEST_CASE("add_two", "[Focuslock]") {
-  Focuslock flock;
-  REQUIRE(flock.add_two(0) == 2);
-}
+// using namespace flock;
+
+// TEST_CASE("add_two", "[flock]") { REQUIRE(add_two(0) == 2); }

@@ -1,3 +1,4 @@
+#include "actions/actions.h"
 #include "cli/commands.h"
 #include <cli11/CLI11.hpp>
 #include <iostream>
@@ -23,11 +24,9 @@ static const char USAGE[] =
 
     )";
 
-namespace cli {
-
 void newSession(const std::map<std::string, std::string> &args) {
   if (args.find("--name") != args.end() && !args.at("--name").empty()) {
-    std::cout << "creating new session: " << args.at("--name") << std::endl;
+    actions::NewSession(args.at("--name"));
   } else {
     std::cout << "name session not specified..." << std::endl;
   }
@@ -99,6 +98,7 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
                               true));
 }
 
+namespace cli {
 // run_cli read arguments of program execution and handle them
 int runCli(int argc, char *argv[]) {
   CLI::App app{"Focuslock CLI Application"};
