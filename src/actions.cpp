@@ -8,5 +8,6 @@ void NewSession(std::string name) {
   // creating new session
   sessions::Session s = {name, sessions::Settings{}};
   serialization::serializeSession(s);
+  sessions::loadSessions();
 }
 } // namespace actions

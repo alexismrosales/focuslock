@@ -18,7 +18,8 @@ struct Session {
   Settings settings;
 };
 
-struct AllSessions {
-  std::vector<Session> sessionList;
-};
+std::vector<Session> loadSessions();
+void saveSession();
+void saveTemporalSession();
+void getTemporalSession();
 } // namespace sessions
