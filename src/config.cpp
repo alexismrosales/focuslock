@@ -12,6 +12,7 @@ std::string loadConfig() {
   try {
     std::filesystem::path path = getPath();
     // if directories of $HOME/.config/focuslock does not exist
+    // TODO: Check permisions to create and write files
     if (!std::filesystem::exists(path)) {
       std::filesystem::create_directories(path);
     }
