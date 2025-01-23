@@ -49,8 +49,8 @@ ryml::Tree serializeSession(sessions::Session s) {
     domains_list.append_child() << ryml::to_csubstr(domain);
   }
 
-  std::cout << "Árbol YAML serializado:\n";
-  std::cout << ryml::emitrs_yaml<std::string>(t) << std::endl;
+  // std::cout << "Árbol YAML serializado:\n";
+  // std::cout << ryml::emitrs_yaml<std::string>(t) << std::endl;
   return t;
 }
 
