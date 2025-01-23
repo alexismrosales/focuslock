@@ -1,19 +1,12 @@
 #include "actions/actions.h"
+#include "serialization/serialization.hpp"
+#include "sessions/sessions.h"
 #include <iostream>
 
 namespace actions {
-void NewSession(std::string sessionName) {
-  // crearing new session
-  Session s{sessionName, // name
-            {            // config
-             {
-                 // pomodoro (default config)
-                 true,                     // enable
-                 std::chrono::minutes(25), // work
-                 std::chrono::minutes(5),  // shortBreak
-                 std::chrono::minutes(15), // longBreak
-                 4                         // cycles
-             }}};
+void NewSession(std::string name) {
+  // creating new session
+  sessions::Session s = {name, sessions::Settings{}};
+  serialization::serializeSession(s);
 }
-
 } // namespace actions

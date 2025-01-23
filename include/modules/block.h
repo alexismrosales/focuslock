@@ -5,6 +5,6 @@
 namespace block {
 struct Block {
   bool enable;
-  std::vector<std::string> domain;
+  std::vector<std::string> domains;
 };
 } // namespace block

@@ -12,6 +12,12 @@ target_include_directories(commands PUBLIC ../include ../ext/)
 add_library(actions actions.cpp)
 target_include_directories(actions PUBLIC ../include ../ext/)
 
+# SERIALIZATION
+add_library(serialization serialization.cpp)
+target_include_directories(serialization PUBLIC ../include ../ext/)
+
 # LIBRARIES LINKED TO CLI
 target_link_libraries(cli PUBLIC commands actions)
 
+# LIBRARIES LINKED TO ACTIONS
+target_link_libraries(actions PUBLIC serialization)
