@@ -24,7 +24,6 @@ target_include_directories(sessions PUBLIC ../include ../ext/)
 add_library(config config.cpp)
 target_include_directories(config PUBLIC ../include ../ext/)
 
-
 # LIBRARIES LINKED TO CLI
 target_link_libraries(cli PUBLIC commands actions)
 
