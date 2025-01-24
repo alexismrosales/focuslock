@@ -12,22 +12,36 @@ std::string loadConfig() {
   try {
     std::filesystem::path path = getPath();
     // if directories of $HOME/.config/focuslock does not exist
-    // TODO: Check permisions to create and write files
     if (!std::filesystem::exists(path)) {
       std::filesystem::create_directories(path);
     }
-    // TODO: create a new file if it does not exist
+    // 0755 permissions
+    std::filesystem::permissions(path,
+                                 std::filesystem::perms::owner_all |
+                                     std::filesystem::perms::group_read |
+                                     std::filesystem::perms::group_exec |
+                                     std::filesystem::perms::others_read |
+                                     std::filesystem::perms::others_exec,
+                                 std::filesystem::perm_options::replace);
 
-    // loading file
-    std::ifstream configFile(path / configFilename);
+    std::filesystem::path fullPath = path / configFilename;
     std::string config = "";
-    std::string line;
-    // saving file into config string
-    while (getline(configFile, line)) {
-      config += line + "\n";
+    // if file of $HOME/.config/focuslock/sessions.yaml does not exist
+    if (!std::filesystem::exists(fullPath)) {
+      std::ofstream newConfigFile(fullPath);
+    } else {
+      // loading file
+      std::ifstream configFile(fullPath);
+      std::string line;
+      // saving file into config string
+      while (getline(configFile, line)) {
+        config += line + "\n";
+      }
+      config.pop_back();
+      configFile.close();
     }
-    configFile.close();
     return config;
+
   } catch (const std::exception &e) {
     std::cerr << "Exception: " << e.what() << std::endl;
     // close execution
