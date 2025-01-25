@@ -19,7 +19,7 @@ struct Session {
 };
 
 std::vector<Session> loadSessions();
-void saveSession();
+void saveSessions(std::vector<sessions::Session> sessions);
 void saveTemporalSession();
 void getTemporalSession();
 } // namespace sessions
