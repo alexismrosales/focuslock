@@ -28,7 +28,7 @@ target_include_directories(config PUBLIC ../include ../ext/)
 target_link_libraries(cli PUBLIC commands actions)
 
 # LIBRARIES LINKED TO ACTIONS
-target_link_libraries(actions PUBLIC serialization sessions)
+target_link_libraries(actions PUBLIC sessions)
 
 # LIBRARIES LINKED TO SESSIONS
-target_link_libraries(sessions PUBLIC config)
+target_link_libraries(sessions PUBLIC config serialization)
