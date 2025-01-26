@@ -9,22 +9,8 @@ namespace config {
 // saveConfig from configStr content into the given path
 void saveConfig(std::string configStr, std::string configPath,
                 std::string fileName) {
-  // TODO: duplication of getPath function call, can this be more efficient?
-  // think that the function would be used in more than one method
   try {
-    std::filesystem::path path = getPath(configPath) / "focuslock";
-    // if directories of $HOME/.config/focuslock does not exist
-    if (!std::filesystem::exists(path)) {
-      std::filesystem::create_directories(path);
-    }
-    // 0755 permissions
-    std::filesystem::permissions(path,
-                                 std::filesystem::perms::owner_all |
-                                     std::filesystem::perms::group_read |
-                                     std::filesystem::perms::group_exec |
-                                     std::filesystem::perms::others_read |
-                                     std::filesystem::perms::others_exec,
-                                 std::filesystem::perm_options::replace);
+    std::filesystem::path path = createConfigPath(configPath) / "focuslock";
     std::filesystem::path fullPath = path / fileName;
     std::ofstream configFile(fullPath);
     if (!configFile.is_open()) {
@@ -46,20 +32,7 @@ void saveConfig(std::string configStr, std::string configPath,
 // loadConfig from the given path
 std::string loadConfig(std::string configPath, std::string fileName) {
   try {
-    std::filesystem::path path = getPath(configPath) / "focuslock";
-    // if directories of $HOME/.config/focuslock does not exist
-    if (!std::filesystem::exists(path)) {
-      std::filesystem::create_directories(path);
-    }
-    // 0755 permissions
-    std::filesystem::permissions(path,
-                                 std::filesystem::perms::owner_all |
-                                     std::filesystem::perms::group_read |
-                                     std::filesystem::perms::group_exec |
-                                     std::filesystem::perms::others_read |
-                                     std::filesystem::perms::others_exec,
-                                 std::filesystem::perm_options::replace);
-
+    std::filesystem::path path = createConfigPath(configPath) / "focuslock";
     std::filesystem::path fullPath = path / fileName;
     std::string config = "";
     // if file of $HOME/.config/focuslock/sessions.yaml does not exist
@@ -90,7 +63,7 @@ std::string loadConfig(std::string configPath, std::string fileName) {
 }
 
 // getPath from enviroment HOME, returning path as $HOME/${configPath}
-std::filesystem::path getPath(std::string configPath) {
+std::filesystem::path createConfigPath(std::string configPath) {
   // obtaining home path
   char *homeC = std::getenv("HOME");
   // in case env does not exist
@@ -98,7 +71,19 @@ std::filesystem::path getPath(std::string configPath) {
     throw std::runtime_error("error obtaining home directory");
   }
   std::filesystem::path homeDir = homeC;
-  std::filesystem::path configDir = configPath;
-  return homeDir / configDir;
+  std::filesystem::path fullPath = homeDir / configPath;
+  // if directories of $HOME/${configPath}/focuslock does not exist
+  if (!std::filesystem::exists(fullPath)) {
+    std::filesystem::create_directories(fullPath);
+  }
+  // 0755 permissions
+  std::filesystem::permissions(fullPath,
+                               std::filesystem::perms::owner_all |
+                                   std::filesystem::perms::group_read |
+                                   std::filesystem::perms::group_exec |
+                                   std::filesystem::perms::others_read |
+                                   std::filesystem::perms::others_exec,
+                               std::filesystem::perm_options::replace);
+  return fullPath;
 }
 } // namespace config
