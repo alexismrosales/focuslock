@@ -26,23 +26,47 @@ static const char USAGE[] =
 
 void newSession(const std::map<std::string, std::string> &args) {
   if (args.find("--name") != args.end() && !args.at("--name").empty()) {
-    actions::NewSession(args.at("--name"));
+    actions::newSession(args.at("--name"));
+    std::cout << "new session " << args.at("--name") << " created succesfully"
+              << std::endl;
   } else {
     std::cout << "name session not specified..." << std::endl;
   }
 }
 
-void setSession(const std::map<std::string, std::string> &args) {}
-void status(const std::map<std::string, std::string> &args) {}
+void setSession(const std::map<std::string, std::string> &args) {
+  if (args.find("--name") != args.end() && !args.at("--name").empty()) {
+    actions::setSession(args.at("--name"));
+    std::cout << "session " << args.at("--name") << " selected succesfully"
+              << std::endl;
+
+  } else {
+    std::cout << "name session not specified..." << std::endl;
+  }
+}
+
+void status(const std::map<std::string, std::string> &args) {
+  std::string tempSession = actions::status();
+  std::cout << tempSession << std::endl;
+}
+
 void block(const std::map<std::string, std::string> &args) {}
+
 void start(const std::map<std::string, std::string> &args) {}
+
 void stop(const std::map<std::string, std::string> &args) {}
-void listSessions(const std::map<std::string, std::string> &args) {}
+
+void listSessions(const std::map<std::string, std::string> &args) {
+  std::string sessions = actions::listSessions();
+  std::cout << sessions << std::endl;
+}
+
 void enable(const std::map<std::string, std::string> &args) {
   for (const auto &[cmd, vals] : args) {
     std::cout << "command: " << cmd << ", values: " << vals << std::endl;
   }
 }
+
 void disable(const std::map<std::string, std::string> &args) {}
 
 void createCommands(CommandRegistry &registry, CLI::App &app) {
