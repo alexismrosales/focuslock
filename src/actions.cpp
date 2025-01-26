@@ -65,8 +65,8 @@ std::string listSessions() {
   std::string sessionsStr = "";
   // iterate over sessions
   for (int i = 0; i < ss.size(); i++) {
-    sessionsStr += "[" + std::to_string(i + 1) + "]" + "session:" + ss[i].name +
-                   "\n    -pomodoro:" +
+    sessionsStr += "[" + std::to_string(i + 1) + "] " +
+                   "session:" + ss[i].name + "\n    -pomodoro:" +
                    (ss[i].settings.pomodoro.enable ? "true" : "false") +
                    "\n    -blocker: " +
                    (ss[i].settings.pomodoro.enable ? "true" : "false") + "\n\n";
