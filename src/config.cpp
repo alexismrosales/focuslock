@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 namespace config {
+// saveConfig from configStr content into the given path
 void saveConfig(std::string configStr, std::string configPath,
                 std::string fileName) {
   // TODO: duplication of getPath function call, can this be more efficient?
@@ -42,6 +43,7 @@ void saveConfig(std::string configStr, std::string configPath,
   }
 }
 
+// loadConfig from the given path
 std::string loadConfig(std::string configPath, std::string fileName) {
   try {
     std::filesystem::path path = getPath(configPath) / "focuslock";
@@ -87,6 +89,7 @@ std::string loadConfig(std::string configPath, std::string fileName) {
   }
 }
 
+// getPath from enviroment HOME, returning path as $HOME/${configPath}
 std::filesystem::path getPath(std::string configPath) {
   // obtaining home path
   char *homeC = std::getenv("HOME");

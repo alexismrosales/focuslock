@@ -6,6 +6,7 @@
 
 namespace serialization {
 
+// serializeSession and puts data into a tree
 ryml::Tree serializeSession(sessions::Session s) {
   ryml::Tree t;
   ryml::NodeRef root = t.rootref();
@@ -14,6 +15,8 @@ ryml::Tree serializeSession(sessions::Session s) {
   return t;
 }
 
+// serializeSessions, and iterate over all sessions to transform it into a
+// single tree
 ryml::Tree serializeSessions(std::vector<sessions::Session> sessions) {
   ryml::Tree t;
   ryml::NodeRef root = t.rootref();
@@ -28,6 +31,7 @@ ryml::Tree serializeSessions(std::vector<sessions::Session> sessions) {
   return t;
 }
 
+// deserializeSession from a yaml string and save it into a session struct
 sessions::Session deserializeSession(ryml::substr session) {
   // parsing yaml file
   ryml::Tree t = ryml::parse_in_place(ryml::to_substr(session));
@@ -38,6 +42,8 @@ sessions::Session deserializeSession(ryml::substr session) {
   return s;
 }
 
+// deserializeSessions from one or more sessions and save it into a vector of
+// sessions struct
 std::vector<sessions::Session> deserializeSessions(ryml::substr sessions) {
   // parsing yaml file
   ryml::Tree t = ryml::parse_in_place(ryml::to_substr(sessions));
@@ -59,6 +65,7 @@ std::vector<sessions::Session> deserializeSessions(ryml::substr sessions) {
   return sessionsList;
 }
 
+// saveTreeToSession
 void saveTreeToSession(sessions::Session &s, ryml::ConstNodeRef node) {
   // name session node
   ryml::csubstr name = node["session"].val();
@@ -84,6 +91,7 @@ void saveTreeToSession(sessions::Session &s, ryml::ConstNodeRef node) {
   }
 }
 
+// saveSessionToTree
 void saveSessionToTree(sessions::Session s, ryml::NodeRef &root) {
   // session name
   root["session"] << ryml::to_csubstr(s.name);

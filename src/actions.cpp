@@ -4,6 +4,8 @@
 #include <vector>
 
 namespace actions {
+// newSession, creates a new session, first loading all sessions avalaible and
+// adds the new session to the sessions and then save it
 void newSession(std::string name) {
   // creating new session
   sessions::Session s = {name, sessions::Settings{}};
@@ -22,6 +24,8 @@ void newSession(std::string name) {
   sessions::saveSessions(ss);
 }
 
+// setSession to a temporal file saved in $HOME/.local/share/focuslock if it is
+// avalaible
 void setSession(std::string name) {
   std::vector<sessions::Session> ss = sessions::loadSessions();
   int i = 0;
@@ -42,6 +46,7 @@ void setSession(std::string name) {
   sessions::saveTemporalSession(ss[i]);
 }
 
+// status show the current status of the temporal session in case it exists
 std::string status() {
   sessions::Session s = sessions::loadTemporalSession();
   if (!s.name.empty()) {
@@ -54,6 +59,7 @@ std::string status() {
   }
 }
 
+// listSessions, first loading all sessions and then format them
 std::string listSessions() {
   std::vector<sessions::Session> ss = sessions::loadSessions();
   std::string sessionsStr = "";

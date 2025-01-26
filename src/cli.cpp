@@ -24,6 +24,8 @@ static const char USAGE[] =
 
     )";
 
+// commands
+
 void newSession(const std::map<std::string, std::string> &args) {
   if (args.find("--name") != args.end() && !args.at("--name").empty()) {
     actions::newSession(args.at("--name"));
@@ -69,6 +71,7 @@ void enable(const std::map<std::string, std::string> &args) {
 
 void disable(const std::map<std::string, std::string> &args) {}
 
+// createCommands saving them on registry variable
 void createCommands(CommandRegistry &registry, CLI::App &app) {
   registry.addCommand(
       Command(app, "new-session",
