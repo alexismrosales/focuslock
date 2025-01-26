@@ -6,11 +6,12 @@
 #include <stdexcept>
 
 namespace config {
-void saveConfig(std::string configStr) {
+void saveConfig(std::string configStr, std::string configPath,
+                std::string fileName) {
   // TODO: duplication of getPath function call, can this be more efficient?
   // think that the function would be used in more than one method
   try {
-    std::filesystem::path path = getPath();
+    std::filesystem::path path = getPath(configPath) / "focuslock";
     // if directories of $HOME/.config/focuslock does not exist
     if (!std::filesystem::exists(path)) {
       std::filesystem::create_directories(path);
@@ -23,15 +24,15 @@ void saveConfig(std::string configStr) {
                                      std::filesystem::perms::others_read |
                                      std::filesystem::perms::others_exec,
                                  std::filesystem::perm_options::replace);
-    std::filesystem::path fullPath = path / configFilename;
+    std::filesystem::path fullPath = path / fileName;
     std::ofstream configFile(fullPath);
     if (!configFile.is_open()) {
-      throw std::runtime_error("Error obtaining file");
+      throw std::runtime_error("error obtaining file");
     }
     configFile << configStr;
     configFile.close();
   } catch (const std::exception &e) {
-    std::cerr << "Error writing sessions.yaml file: " << e.what()
+    std::cerr << "error writing sessions.yaml file: " << e.what()
               << " (Exception Type: " << typeid(e).name() << ")" << std::endl;
 
     // close execution
@@ -41,9 +42,9 @@ void saveConfig(std::string configStr) {
   }
 }
 
-std::string loadConfig() {
+std::string loadConfig(std::string configPath, std::string fileName) {
   try {
-    std::filesystem::path path = getPath();
+    std::filesystem::path path = getPath(configPath) / "focuslock";
     // if directories of $HOME/.config/focuslock does not exist
     if (!std::filesystem::exists(path)) {
       std::filesystem::create_directories(path);
@@ -57,7 +58,7 @@ std::string loadConfig() {
                                      std::filesystem::perms::others_exec,
                                  std::filesystem::perm_options::replace);
 
-    std::filesystem::path fullPath = path / configFilename;
+    std::filesystem::path fullPath = path / fileName;
     std::string config = "";
     // if file of $HOME/.config/focuslock/sessions.yaml does not exist
     if (!std::filesystem::exists(fullPath)) {
@@ -76,7 +77,7 @@ std::string loadConfig() {
     return config;
 
   } catch (const std::exception &e) {
-    std::cerr << "Error reading sessions.yaml file: " << e.what()
+    std::cerr << "error reading sessions.yaml file: " << e.what()
               << " (Exception Type: " << typeid(e).name() << ")" << std::endl;
 
     // close execution
@@ -86,12 +87,12 @@ std::string loadConfig() {
   }
 }
 
-std::filesystem::path getPath() {
+std::filesystem::path getPath(std::string configPath) {
   // obtaining home path
   char *homeC = std::getenv("HOME");
   // in case env does not exist
   if (!homeC) {
-    throw std::runtime_error("Error obtaining home directory");
+    throw std::runtime_error("error obtaining home directory");
   }
   std::filesystem::path homeDir = homeC;
   std::filesystem::path configDir = configPath;

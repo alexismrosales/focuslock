@@ -4,9 +4,8 @@
 #include <stdexcept>
 
 namespace config {
-const std::string configPath = ".config/focuslock";
-const std::string configFilename = "sessions.yaml";
-void saveConfig(std::string configStr);
-std::string loadConfig();
-std::filesystem::path getPath();
+void saveConfig(std::string configStr, std::string configPath,
+                std::string fileName);
+std::string loadConfig(std::string configPath, std::string fileName);
+std::filesystem::path getPath(std::string configPath);
 } // namespace config
