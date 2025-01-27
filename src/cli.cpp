@@ -2,6 +2,7 @@
 #include "cli/commands.h"
 #include <cli11/CLI11.hpp>
 #include <iostream>
+#include <unordered_map>
 
 static const char USAGE[] =
     R"(focuslock.
@@ -24,10 +25,14 @@ static const char USAGE[] =
 
     )";
 
+bool hasParameter(const std::map<std::string, std::string> &args,
+                  std::string parameter) {
+  return args.find(parameter) != args.end() && !args.at(parameter).empty();
+}
 // commands
 
 void newSession(const std::map<std::string, std::string> &args) {
-  if (args.find("--name") != args.end() && !args.at("--name").empty()) {
+  if (hasParameter(args, "--name")) {
     actions::newSession(args.at("--name"));
     std::cout << "new session " << args.at("--name") << " created succesfully"
               << std::endl;
@@ -37,7 +42,7 @@ void newSession(const std::map<std::string, std::string> &args) {
 }
 
 void setSession(const std::map<std::string, std::string> &args) {
-  if (args.find("--name") != args.end() && !args.at("--name").empty()) {
+  if (hasParameter(args, "--name")) {
     actions::setSession(args.at("--name"));
     std::cout << "session " << args.at("--name") << " selected succesfully"
               << std::endl;
@@ -53,6 +58,24 @@ void status(const std::map<std::string, std::string> &args) {
 }
 
 void block(const std::map<std::string, std::string> &args) {}
+
+void pomodoro(const std::map<std::string, std::string> &args) {
+  std::unordered_map<std::string, int> validArgs;
+  for (auto [key, val] : args) {
+    if (!(val == "")) {
+      try {
+        validArgs[key] = std::stoi(val);
+      } catch (const std::exception &e) {
+        std::cerr << "error with type arguments, try only integers value for "
+                     "pomodoro command: "
+                  << e.what() << " (Exception Type: " << typeid(e).name() << ")"
+                  << std::endl;
+        std::exit(EXIT_FAILURE);
+      }
+    }
+  }
+  actions::pomodoro(validArgs);
+}
 
 void start(const std::map<std::string, std::string> &args) {}
 
@@ -99,7 +122,16 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
               {{"--add", "add a URL or directory to the block list"},
                {"--remove", "remove a URL or directory from the block list"},
                {"--list", "show all blocked items"}}));
-
+  registry.addCommand(Command(
+      app, "pomodoro",
+      "control the Pomodoro module for timed work sessions. You can "
+      "configure work and break durations or start/stop the timer.",
+      pomodoro,
+      {{"--work", "set pomodoro work duration (minutes)"},
+       {"--break", "set pomodoro break time duration (minutes)"},
+       {"--long-break", "set pomodoro long break time duration (minutes)"},
+       {"--cycles",
+        "set the number of Pomodoro sessions before a long break"}}));
   registry.addCommand(
       Command(app, "list-sessions",
               "show a list of all sessions currently available in focuslock. "

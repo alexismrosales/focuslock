@@ -76,4 +76,42 @@ std::string listSessions() {
   sessionsStr.pop_back();
   return sessionsStr;
 }
+
+// pomodoro configuration for the temporal session
+void pomodoro(std::unordered_map<std::string, int> args) {
+  sessions::Session s = sessions::loadTemporalSession();
+  if (s.name.empty()) {
+    std::cerr << "no session set yet" << std::endl;
+  }
+  // saving arguments values
+  for (auto [key, val] : args) {
+    // convert to minutes
+    std::chrono::minutes duration(val);
+    if (key == "--work") {
+      s.settings.pomodoro.work = duration;
+    } else if (key == "--break") {
+      s.settings.pomodoro.shortBreak = duration;
+    } else if (key == "--long-break") {
+      s.settings.pomodoro.longBreak = duration;
+    } else if (key == "cycles") {
+      s.settings.pomodoro.cycles = val;
+    }
+  }
+
+  std::vector<sessions::Session> ss = sessions::loadSessions();
+  int i = 0;
+  // find index of session selected
+  while (i < ss.size()) {
+    if (ss[i].name == s.name) {
+      break;
+    }
+    i++;
+  }
+  // modifiying session selected
+  ss[i] = s;
+  // after modifying the current session it is saved
+  sessions::saveTemporalSession(s);
+  // saving all sessions with the modified session
+  sessions::saveSessions(ss);
+}
 } // namespace actions
