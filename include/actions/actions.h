@@ -3,9 +3,10 @@
 #include <unordered_map>
 #include <vector>
 namespace actions {
-void newSession(std::string name);
-void setSession(std::string name);
-std::string status();
+std::string newSession(std::string name);
+std::string setSession(std::string name);
+std::string status(std::string name);
 std::string listSessions();
-void pomodoro(std::unordered_map<std::string, int> args);
+std::string pomodoro(std::unordered_map<std::string, int> args);
+std::string block(std::unordered_map<std::string, std::string> args);
 } // namespace actions

@@ -1,19 +1,21 @@
 #include "actions/actions.h"
 #include "sessions/sessions.h"
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace actions {
+
 // newSession, creates a new session, first loading all sessions avalaible and
 // adds the new session to the sessions and then save it
-void newSession(std::string name) {
+std::string newSession(std::string name) {
   // creating new session
   sessions::Session s = {name, sessions::Settings{}};
   std::vector<sessions::Session> ss = sessions::loadSessions();
   // verify session name duplication
   for (auto &session : ss) {
     if (session.name == name) {
-      std::cerr << "Error creating session: session name already exist"
+      std::cerr << "error creating session: session name already exist"
                 << std::endl;
       std::exit(EXIT_FAILURE);
     }
@@ -22,41 +24,44 @@ void newSession(std::string name) {
   ss.push_back(s);
 
   sessions::saveSessions(ss);
+  return "new session " + name + " created succesfully";
 }
 
-// setSession to a temporal file saved in $HOME/.local/share/focuslock if it is
-// avalaible
-void setSession(std::string name) {
+// setSession to a temporal file saved in $HOME/.local/share/focuslock if it
+// is avalaible
+std::string setSession(std::string name) {
   std::vector<sessions::Session> ss = sessions::loadSessions();
-  int i = 0;
+
   // find index of session selected
-  while (i < ss.size()) {
-    if (ss[i].name == name) {
-      break;
-    }
-    i++;
-  }
+  int index = sessions::findSessionIndexByName(ss, name);
   // in case session was not found
-  if (i == ss.size()) {
+  if (index == -1) {
     std::cerr << "error obtaining temp session: session does not exists"
               << std::endl;
     std::exit(EXIT_FAILURE);
   }
   // save session
-  sessions::saveTemporalSession(ss[i]);
+  sessions::saveTemporalSession(ss[index]);
+  return "new session " + name + " created succesfully";
 }
 
 // status show the current status of the temporal session in case it exists
-std::string status() {
-  sessions::Session s = sessions::loadTemporalSession();
-  if (!s.name.empty()) {
-    return "current session: " + s.name + "\n    -pomodoro: " +
-           (s.settings.pomodoro.enable ? "enabled" : "disabled") +
-           "\n    -blocker: " +
-           (s.settings.pomodoro.enable ? "enabled" : "disabled");
+std::string status(std::string name) {
+  // if there is an specific session
+  if (name != "") {
+    std::vector<sessions::Session> ss = sessions::loadSessions();
+    int index = sessions::findSessionIndexByName(ss, name);
+    if (index != -1) {
+      return sessions::sessionInfo(ss[index], false);
+    }
   } else {
-    return "no current session set";
+    sessions::Session s = sessions::loadTemporalSession();
+    if (!s.name.empty()) {
+      return sessions::sessionInfo(s, true);
+    }
   }
+  std::cerr << "no current session set";
+  return "";
 }
 
 // listSessions, first loading all sessions and then format them
@@ -67,9 +72,10 @@ std::string listSessions() {
   for (int i = 0; i < ss.size(); i++) {
     sessionsStr += "[" + std::to_string(i + 1) + "] " +
                    "session:" + ss[i].name + "\n    -pomodoro:" +
-                   (ss[i].settings.pomodoro.enable ? "true" : "false") +
+                   (ss[i].settings.pomodoro.enable ? "enabled" : "disabled") +
                    "\n    -blocker: " +
-                   (ss[i].settings.pomodoro.enable ? "true" : "false") + "\n\n";
+                   (ss[i].settings.pomodoro.enable ? "enabled" : "disabled") +
+                   "\n\n";
   }
   // remove last two line breaks
   sessionsStr.pop_back();
@@ -78,16 +84,19 @@ std::string listSessions() {
 }
 
 // pomodoro configuration for the temporal session
-void pomodoro(std::unordered_map<std::string, int> args) {
+std::string pomodoro(std::unordered_map<std::string, int> args) {
   sessions::Session s = sessions::loadTemporalSession();
   if (s.name.empty()) {
-    std::cerr << "no session set yet" << std::endl;
+    std::cerr << "error: no session set yet" << std::endl;
   }
+
   // saving arguments values
   for (auto [key, val] : args) {
     // convert to minutes
     std::chrono::minutes duration(val);
-    if (key == "--work") {
+    if (key == "--enable") {
+      s.settings.pomodoro.enable = val ? true : false;
+    } else if (key == "--work") {
       s.settings.pomodoro.work = duration;
     } else if (key == "--break") {
       s.settings.pomodoro.shortBreak = duration;
@@ -99,19 +108,67 @@ void pomodoro(std::unordered_map<std::string, int> args) {
   }
 
   std::vector<sessions::Session> ss = sessions::loadSessions();
-  int i = 0;
   // find index of session selected
-  while (i < ss.size()) {
-    if (ss[i].name == s.name) {
-      break;
-    }
-    i++;
-  }
+  int index = sessions::findSessionIndexByName(ss, s.name);
   // modifiying session selected
-  ss[i] = s;
+  ss[index] = s;
   // after modifying the current session it is saved
   sessions::saveTemporalSession(s);
   // saving all sessions with the modified session
   sessions::saveSessions(ss);
+  return "pomodoro configuration was succesful";
+}
+
+std::string block(std::unordered_map<std::string, std::string> args) {
+
+  // loading temporal session
+  sessions::Session s = sessions::loadTemporalSession();
+  if (s.name.empty()) {
+    std::cerr << "error: no session set yet" << std::endl;
+  }
+
+  // in case the user select list command and other command
+  if (args.count("--list") && args.size() > 1) {
+    std::cerr << "error: the '--list' flag must be used alone and cannot be "
+                 "combined with other options.";
+    std::exit(EXIT_FAILURE);
+    // in case there is the list command
+  } else if (args.count("--list")) {
+    std::stringstream ss;
+    for (int i = 0; i < s.settings.block.domains.size(); i++) {
+      ss << "[" + std::to_string(i + 1) + "] " + s.settings.block.domains[i]
+         << std::endl;
+    }
+    std::string list = ss.str();
+    list.pop_back();
+    return list;
+  }
+
+  // handle other cases
+  for (auto [key, val] : args) {
+    if (key == "--enable") {
+      s.settings.pomodoro.enable = val == "true" ? true : false;
+    } else if (key == "--add") {
+      s.settings.block.domains.push_back(val);
+    } else if (key == "--remove") {
+      int index = 0;
+      std::vector<std::string> domains = s.settings.block.domains;
+      while (index < domains.size()) {
+        if (domains[index] == val) {
+          break;
+        }
+        index++;
+      }
+      if (index >= domains.size()) {
+        std::cerr << "error: domain does not exist\n";
+        std::exit(EXIT_FAILURE);
+      }
+      // delete element from vector
+      s.settings.block.domains.erase(s.settings.block.domains.begin() + index);
+    }
+  }
+  // save modified session
+  sessions::saveTemporalSession(s);
+  return "block configuration was succesful";
 }
 } // namespace actions

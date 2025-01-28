@@ -33,9 +33,8 @@ bool hasParameter(const std::map<std::string, std::string> &args,
 
 void newSession(const std::map<std::string, std::string> &args) {
   if (hasParameter(args, "--name")) {
-    actions::newSession(args.at("--name"));
-    std::cout << "new session " << args.at("--name") << " created succesfully"
-              << std::endl;
+    std::string output = actions::newSession(args.at("--name"));
+    std::cout << output << std::endl;
   } else {
     std::cout << "name session not specified..." << std::endl;
   }
@@ -43,38 +42,62 @@ void newSession(const std::map<std::string, std::string> &args) {
 
 void setSession(const std::map<std::string, std::string> &args) {
   if (hasParameter(args, "--name")) {
-    actions::setSession(args.at("--name"));
-    std::cout << "session " << args.at("--name") << " selected succesfully"
-              << std::endl;
-
+    std::string output = actions::setSession(args.at("--name"));
+    std::cout << output << std::endl;
   } else {
     std::cout << "name session not specified..." << std::endl;
   }
 }
 
+// TODO: consider deleteSessionc command
+
 void status(const std::map<std::string, std::string> &args) {
-  std::string tempSession = actions::status();
-  std::cout << tempSession << std::endl;
+  std::string output = actions::status(args.at("--session"));
+  std::cout << output << std::endl;
 }
 
-void block(const std::map<std::string, std::string> &args) {}
+void block(const std::map<std::string, std::string> &args) {
+  std::unordered_map<std::string, std::string> validArgs;
+  // if parameter is enabled
+  if (hasParameter(args, "--enable")) {
+    validArgs["--enable"] = args.at("--enable") == "true" ? 1 : 0;
+  }
+  // save only valid args
+  for (auto [key, val] : args) {
+    if (val != "") {
+      if (key != "--enable") {
+        validArgs[key] = val;
+      }
+    }
+  }
+  std::string output = actions::block(validArgs);
+  std::cout << output << std::endl;
+}
 
 void pomodoro(const std::map<std::string, std::string> &args) {
   std::unordered_map<std::string, int> validArgs;
+  // if parameter is enabled
+  if (hasParameter(args, "--enable")) {
+    validArgs["--enable"] = args.at("--enable") == "true" ? 1 : 0;
+  }
+  // save only valid args
   for (auto [key, val] : args) {
-    if (!(val == "")) {
+    if (val != "") {
       try {
-        validArgs[key] = std::stoi(val);
+        if (key != "--enable") {
+          validArgs[key] = std::stoi(val);
+        }
       } catch (const std::exception &e) {
-        std::cerr << "error with type arguments, try only integers value for "
-                     "pomodoro command: "
+        std::cerr << "error with arguments, try --help"
+                     "pomodoro command. "
                   << e.what() << " (Exception Type: " << typeid(e).name() << ")"
                   << std::endl;
         std::exit(EXIT_FAILURE);
       }
     }
   }
-  actions::pomodoro(validArgs);
+  std::string output = actions::pomodoro(validArgs);
+  std::cout << output << std::endl;
 }
 
 void start(const std::map<std::string, std::string> &args) {}
@@ -108,13 +131,14 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
               "will be used for future commands until changed.",
               setSession, {{"--name", "name of existing session"}}));
 
-  registry.addCommand(
-      Command(app, "status",
-              "display the current status of focuslock, including the active "
-              "session and the status of enabled modules.",
-              status));
+  registry.addCommand(Command(
+      app, "status",
+      "display the current status of focuslock, including the active "
+      "session and the status of enabled modules or an specific session.",
+      status, {{"--session", "name of an specific session"}}));
 
   registry.addCommand(
+      // TODO: --list command needs a TEXT value to access to it
       Command(app, "block",
               "add, remove, or list blocked URLs and directories. \n\t Use "
               "subcommands to modify the block list.",
@@ -127,7 +151,8 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
       "control the Pomodoro module for timed work sessions. You can "
       "configure work and break durations or start/stop the timer.",
       pomodoro,
-      {{"--work", "set pomodoro work duration (minutes)"},
+      {{"--enable", "set a boolean value to enable or disable pomodoro module"},
+       {"--work", "set pomodoro work duration (minutes)"},
        {"--break", "set pomodoro break time duration (minutes)"},
        {"--long-break", "set pomodoro long break time duration (minutes)"},
        {"--cycles",
@@ -140,7 +165,8 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
 
   registry.addCommand(Command(
       app, "start",
-      "start focuslock and activate the configured modules. If a session name "
+      "start focuslock and activate the configured modules. If a "
+      "session name "
       "is provided, switches to that session before starting",
       start,
       {{"--name", " name of an existing session to switch to before start"}}));
