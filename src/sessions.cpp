@@ -71,4 +71,42 @@ void saveTemporalSession(sessions::Session s) {
     parsingErrorException(e);
   }
 }
+
+std::string sessionInfo(const sessions::Session &s,
+                        const bool isCurrentSession) {
+  std::stringstream ss;
+  ss << (isCurrentSession ? "current session: " : "session:") << s.name << "\n";
+  ss << "   ├── pomodoro: "
+     << (s.settings.pomodoro.enable ? "enabled" : "disabled") << "\n";
+  ss << "   │   ├── work: " << s.settings.pomodoro.work.count() << " min\n";
+  ss << "   │   ├── short break: " << s.settings.pomodoro.shortBreak.count()
+     << " min\n";
+  ss << "   │   ├── kong break: " << s.settings.pomodoro.longBreak.count()
+     << " min\n";
+  ss << "   │   └── cycles: " << s.settings.pomodoro.cycles << "\n";
+  ss << "   └── blocker: " << (s.settings.block.enable ? "enabled" : "disabled")
+     << "\n";
+
+  if (!s.settings.block.domains.empty()) {
+    ss << "   │   └── blocked Domains:\n";
+    for (const auto &domain : s.settings.block.domains) {
+      ss << "   │       • " << domain << "\n";
+    }
+  } else {
+    ss << "       └── no domains blocked\n";
+  }
+  return ss.str();
+}
+
+int findSessionIndexByName(const std::vector<Session> ss, std::string name) {
+  int i = 0;
+  // find index of session selected
+  while (i < ss.size()) {
+    if (ss[i].name == name) {
+      return i;
+    }
+    i++;
+  }
+  return -1;
+}
 } // namespace sessions

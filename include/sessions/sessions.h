@@ -22,4 +22,7 @@ std::vector<Session> loadSessions();
 void saveSessions(std::vector<sessions::Session> sessions);
 Session loadTemporalSession();
 void saveTemporalSession(sessions::Session s);
+std::string sessionInfo(const sessions::Session &s,
+                        const bool isCurrentSession);
+int findSessionIndexByName(const std::vector<Session> ss, std::string name);
 } // namespace sessions
