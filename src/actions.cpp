@@ -1,4 +1,5 @@
 #include "actions/actions.h"
+#include "modules/pomodoro.h"
 #include "sessions/sessions.h"
 #include <iostream>
 #include <sstream>
@@ -170,5 +171,10 @@ std::string block(std::unordered_map<std::string, std::string> args) {
   // save modified session
   sessions::saveTemporalSession(s);
   return "block configuration was succesful";
+}
+
+void start() {
+  sessions::Session s = sessions::loadTemporalSession();
+  pomodoro::startTimer(s.settings.pomodoro);
 }
 } // namespace actions

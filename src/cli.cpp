@@ -100,7 +100,7 @@ void pomodoro(const std::map<std::string, std::string> &args) {
   std::cout << output << std::endl;
 }
 
-void start(const std::map<std::string, std::string> &args) {}
+void start(const std::map<std::string, std::string> &args) { actions::start(); }
 
 void stop(const std::map<std::string, std::string> &args) {}
 

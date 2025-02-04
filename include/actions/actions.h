@@ -9,4 +9,5 @@ std::string status(std::string name);
 std::string listSessions();
 std::string pomodoro(std::unordered_map<std::string, int> args);
 std::string block(std::unordered_map<std::string, std::string> args);
+void start();
 } // namespace actions
