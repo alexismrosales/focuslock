@@ -3,7 +3,6 @@
 #include "sessions/sessions.h"
 #include <iostream>
 #include <sstream>
-#include <vector>
 
 namespace actions {
 

@@ -35,3 +35,8 @@
 
 # Build
 build/
+
+# Extras
+.cache/
+.clangd
+compile_commands.json

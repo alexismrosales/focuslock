@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.15)
 # Set a name and a version number for your project:
 project(focuslock VERSION 0.0.1 LANGUAGES CXX)
 
+# using C++20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # this needs to be in the top level CMakeLists.txt to enable tests
 include(CTest)
 

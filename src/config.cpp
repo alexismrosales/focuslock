@@ -10,6 +10,7 @@ namespace config {
 void saveConfig(std::string configStr, std::string configPath,
                 std::string fileName) {
   try {
+    // TODO: Verify if directory "focuslock" exists
     std::filesystem::path path = createConfigPath(configPath) / "focuslock";
     std::filesystem::path fullPath = path / fileName;
     std::ofstream configFile(fullPath);
