@@ -10,7 +10,6 @@ namespace config {
 void saveConfig(std::string configStr, std::string configPath,
                 std::string fileName) {
   try {
-    // TODO: Verify if directory "focuslock" exists
     std::filesystem::path path = createConfigPath(configPath) / "focuslock";
     std::filesystem::path fullPath = path / fileName;
     std::ofstream configFile(fullPath);
@@ -30,8 +29,9 @@ void saveConfig(std::string configStr, std::string configPath,
 // loadConfig from the given path
 std::string loadConfig(std::string configPath, std::string fileName) {
   try {
-    std::filesystem::path path =
-        createConfigPath(configPath + "/" + "focuslock");
+    std::filesystem::path path = createConfigPath(
+        configPath + "/" + "focuslock"); // Here we could have the first time it
+                                         // creates the directory
     std::filesystem::path fullPath = path / fileName;
     std::string config = "";
     // if file of $HOME/.config/focuslock/sessions.yaml does not exist

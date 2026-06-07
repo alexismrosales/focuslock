@@ -150,7 +150,7 @@ std::string block(std::unordered_map<std::string, std::string> args) {
       s.settings.pomodoro.enable = val == "true" ? true : false;
     } else if (key == "--add") {
       s.settings.block.domains.push_back(val);
-    } else if (key == "--remove") {
+    } else if (key == "--remove") { // Allow delete config by index
       int index = 0;
       std::vector<std::string> domains = s.settings.block.domains;
       while (index < domains.size()) {
