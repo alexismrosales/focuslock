@@ -22,10 +22,7 @@ void saveConfig(std::string configStr, std::string configPath,
   } catch (const std::exception &e) {
     std::cerr << "error writing sessions.yaml file: " << e.what()
               << " (Exception Type: " << typeid(e).name() << ")" << std::endl;
-
     // close execution
-    // NOTE: is really necessary exit the program?
-    // how does it would work keeping this error?
     std::exit(EXIT_FAILURE);
   }
 }
@@ -33,7 +30,8 @@ void saveConfig(std::string configStr, std::string configPath,
 // loadConfig from the given path
 std::string loadConfig(std::string configPath, std::string fileName) {
   try {
-    std::filesystem::path path = createConfigPath(configPath) / "focuslock";
+    std::filesystem::path path =
+        createConfigPath(configPath + "/" + "focuslock");
     std::filesystem::path fullPath = path / fileName;
     std::string config = "";
     // if file of $HOME/.config/focuslock/sessions.yaml does not exist
