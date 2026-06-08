@@ -1,0 +1,46 @@
+graph TD
+    %% Define Styles and Palettes
+    classDef client fill:#d1e7dd,stroke:#0f5132,stroke-width:2px;
+    classDef network fill:#cff4fc,stroke:#055160,stroke-width:2px;
+    classDef core fill:#f8d7da,stroke:#842029,stroke-width:2px;
+    classDef data fill:#fff3cd,stroke:#664d03,stroke-width:2px;
+
+    %% 1. Input Clients Layer
+    subgraph Clients ["1. Input Clients Layer (Ephemeral / Passive)"]
+        CLI["CLI Binary (focuslock) <br> Uses CLI11 Parser"]:::client
+        WebUI["Web UI Dashboard <br> (HTML / JS Counter Grid)"]:::client
+    end
+
+    %% 2. Communication Layer (Crow Framework)
+    subgraph NetworkLayer ["2. Communication Layer (Crow Server Framework)"]
+        CrowRouter["Crow HTTP Router <br> Handles CLI Requests"]:::network
+        CrowWS["Crow WebSocket Handler <br> Manages Browser Sockets"]:::network
+    end
+
+    %% 3. Core Engine Layer
+    subgraph CoreLayer ["3. Core Processing Engine (Source of Truth)"]
+        Engine["FocusEngine Class <br> (Tracks active states & cycles)"]:::core
+        ClockLoop["Background Timer Loop <br> (Dedicated ticking thread)"]:::core
+        EventBus["Internal Event Bus <br> (Publishes state changes)"]:::core
+    end
+
+    %% 4. Data & Feature Subscribers
+    subgraph Subscriptions ["4. Event Observers & Downstream Actions"]
+        OSBlock["OS Module Handler <br> (URL & Path blocking)"]:::data
+        Metrics["Metrics Engine <br> (Telemetry Log / SQLite)"]:::data
+    end
+
+    %% Define Interactions and Flows
+    CLI -->|1. Short-Lived HTTP POST <br> e.g., /api/start| CrowRouter
+    WebUI <-->|2. Persistent WS Handshake <br> ws://localhost:8080| CrowWS
+    
+    CrowRouter -->|3. Invokes Actions| Engine
+    Engine <-->|4. Manages Countdown| ClockLoop
+    
+    Engine -->|5. Triggers Modules| OSBlock
+    Engine -.->|6. Dispatches State Changes| EventBus
+    
+    EventBus -.->|7a. Broadcasts UI Updates| CrowWS
+    EventBus -.->|7b. Logs Telemetry asynchronously| Metrics
+    
+    CrowWS ==>|8. Streams Live Ticks <br> 1... 2... 3... 10| WebUI
