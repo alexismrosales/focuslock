@@ -100,7 +100,10 @@ void pomodoro(const std::map<std::string, std::string> &args) {
   std::cout << output << std::endl;
 }
 
-void start(const std::map<std::string, std::string> &args) { actions::start(); }
+void start(const std::map<std::string, std::string> &args) {
+  // TODO: add parameter config --session
+  actions::start();
+}
 
 void stop(const std::map<std::string, std::string> &args) {}
 
@@ -138,7 +141,6 @@ void createCommands(CommandRegistry &registry, CLI::App &app) {
       status, {{"--session", "name of an specific session"}}));
 
   registry.addCommand(
-      // TODO: --list command needs a TEXT value to access to it
       Command(app, "block",
               "add, remove, or list blocked URLs and directories. \n\t Use "
               "subcommands to modify the block list.",

@@ -116,7 +116,7 @@ std::string pomodoro(std::unordered_map<std::string, int> args) {
   sessions::saveTemporalSession(s);
   // saving all sessions with the modified session
   sessions::saveSessions(ss);
-  return "pomodoro configuration was succesful";
+  return "pomodoro configuration updated successfully";
 }
 
 std::string block(std::unordered_map<std::string, std::string> args) {
@@ -169,7 +169,7 @@ std::string block(std::unordered_map<std::string, std::string> args) {
   }
   // save modified session
   sessions::saveTemporalSession(s);
-  return "block configuration was succesful";
+  return "block configuration was successful";
 }
 
 void start() {
