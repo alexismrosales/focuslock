@@ -4,7 +4,7 @@
 class Engine {
 public:
   // Controls the API layer will call from Crow routes
-  static void startSession(int work_mins, int break_mins, int cycles);
+  static void startSession(int workMins, int breakMins, int cycles);
   static void pauseSession();
   static void stopSession();
 
