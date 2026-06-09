@@ -13,5 +13,5 @@ public:
 
 private:
   static pomodoro::PomodoroContext pomodoro_;
-  static void broadcastState(event_bus::FocusEvent event_type);
+  static void broadcastState(event_bus::FocusEvent eventType);
 };
