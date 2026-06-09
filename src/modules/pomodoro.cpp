@@ -33,7 +33,7 @@ void timer(std::chrono::minutes time,
     }
   }
 }
-void startTimer(pomodoro::Pomodoro p) {
+void startTimer(pomodoro::PomodoroContext p) {
   std::chrono::minutes workTime = p.work;
   std::chrono::minutes shortBreakTime = p.shortBreak;
   std::chrono::minutes longBreakTime = p.shortBreak;

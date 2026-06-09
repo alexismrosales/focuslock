@@ -1,11 +1,10 @@
 #pragma once
 #include "modules/block.h"
 #include "modules/pomodoro.h"
-#include <iostream>
 #include <vector>
 namespace sessions {
 struct Settings {
-  pomodoro::Pomodoro pomodoro;
+  pomodoro::PomodoroContext pomodoro;
   block::Block block;
   Settings()
       : pomodoro{true, std::chrono::minutes(25), std::chrono::minutes(5),

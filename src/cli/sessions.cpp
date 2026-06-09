@@ -2,7 +2,6 @@
 #include "config/config.h"
 #include "serialization/serialization.h"
 #include <ryml/ryml.hpp>
-#include <stdexcept>
 #include <vector>
 
 namespace sessions {
