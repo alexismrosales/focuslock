@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 # CORE
 add_library(core STATIC
     core/engine.cpp
+    core/event_bus.cpp
     modules/pomodoro.cpp
 )
 

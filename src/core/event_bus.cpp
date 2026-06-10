@@ -11,7 +11,7 @@ void EventBus::publish(event_bus::FocusEvent e,
                        const event_bus::EventPayload &payload) {
   if (!listeners_.contains(e))
     return;
-  for (const auto &c : listeners_[e]) {
+  for (const Callback &c : listeners_[e]) {
     c(payload);
   }
 }
